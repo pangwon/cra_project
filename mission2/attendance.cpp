@@ -141,7 +141,7 @@ TEST_F(AttendanceManagerTest, ShouldBeSilverGrade) {
 	for (int i = 0; i < 35; i++)
 		manager.getAttendanceInfo(name, weekday);
 	manager.manage();
-	
+
 	int id = manager.getPlayerId(name);
 
 	EXPECT_TRUE(manager.getPlayerPoints(id) >= 30);
@@ -201,6 +201,20 @@ TEST_F(AttendanceManagerTest, WrongNameRequested) {
 }
 
 int main() {
+#ifdef NDEBUG
+	ifstream fin{ "attendance_weekday_500.txt" };
+	AttendanceManager manager;
+	manager.selectGradePolicy(new LegacyGradePolicy());
+	manager.selectPointPolicy(new LegacyPointPolicy());
+
+	string name, weekday;
+	for (int i = 0; i < 500; i++) {
+		fin >> name >> weekday;
+		manager.getAttendanceInfo(name, weekday);
+	}
+	manager.manage();
+#else
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
+#endif
 }
